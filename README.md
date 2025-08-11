@@ -1,37 +1,79 @@
-# Processo Ágil para o PDS Corporativo
+# Processo Kanban — PDS Corporativo
 
-Este repositório tem como objetivo documentar o processo ágil definido para aplicação no Projeto de Desenvolvimento de Software (PDS) Corporativo, com foco em eficiência, colaboração e entregas de valor contínuas. O processo foi construído com base em práticas ágeis modernas, utilizando o **Kanban** como ferramenta central de organização.
+Site simples com o processo ágil usado no PDS, baseado em Kanban. O foco é visualização do fluxo, limites de WIP e melhorias curtas e contínuas.
 
-## Idealização do Projeto
+Site publicado: https://luuiizf.github.io/processo-kanban-pds
 
-A implementação de um processo de desenvolvimento de software bem estruturado é essencial para garantir a entrega de produtos de alta qualidade de forma consistente e previsível. A proposta deste projeto surgiu da matéria de **Processo de Software** lecionada por **Marília Aranha**
+## O que tem no site
 
-Neste cenário, o **Kanban** foi escolhido como principal método de gerenciamento visual, permitindo à equipe acompanhar o progresso das tarefas e identificar gargalos no processo.
+- Diagrama de atividades (draw.io exportado para PNG)
+- Quadro Kanban com simulação de fluxo e aviso de WIP
+- Tabela de atividades (inclui gerência, testes e implantação)
+- Papéis e responsabilidades
+- RACI (quem faz o quê)
+- Práticas ágeis (geral) e Práticas por atividade
 
-## Objetivos do Processo
+Checklist do enunciado
+- [x] Diagrama de atividades (ciclo de vida)
+- [x] Descrição de cada atividade
+- [x] Papéis e associação às atividades (RACI)
+- [x] Práticas ágeis aplicadas nas atividades
+- [x] Inclui gerência, testes e implantação
+- [x] Site simples no GitHub Pages (link acima)
 
-- Definir um ciclo de vida claro para o desenvolvimento do PDS;
-- Descrever as atividades envolvidas em cada etapa do processo;
-- Estabelecer os papéis da equipe e suas responsabilidades;
-- Integrar práticas ágeis modernas, como reuniões de revisão, retrospectivas e testes contínuos;
-- Incorporar atividades de gerência, testes e implantação.
+## Fluxo (resumo)
 
-## Estrutura do Repositório
+Backlog → A Fazer → Em Andamento → Em Teste → Concluído
 
-- `index.html` – Introdução e visão geral do processo
-- `atividades.html` – Detalhamento das atividades do ciclo de vida
-- `papeis.html` – Papéis da equipe e responsabilidades
-- `praticas.html` – Práticas ágeis utilizadas no processo
-- `style.css` – Estilos visuais do site
+Atividades de gerência/apoio no processo:
+- Replenishment/Planejamento
+- Gestão de Métricas/Fluxo (CFD, lead/cycle, throughput)
+- Review/Demo e Retrospectiva
+- Feedback de Usuário
+- Implantar (deploy)
 
-> A entrega final será disponibilizada através do GitHub Pages, com um site simples contendo toda a documentação do processo ágil.
-Este site estará disponível em https://luuiizf.github.io/processo-kanban-pds
+## Papéis
+
+- PO: valor e prioridade, critérios, aceite
+- SDM/Agile Coach: fluxo, impedimentos, métricas, cadências
+- Tech Lead: direção técnica e padrões
+- Devs: implementação, testes unit, PRs
+- QA: planejar/executar/automatizar testes
+- Stakeholders: feedback e validações
+
+RACI simples está no site (tabela Papéis × Atividades).
+
+## Práticas (exemplos)
+
+- Limites de WIP e política de pull por capacidade
+- DoR (A Fazer) e DoD (Concluído)
+- PR pequeno + review, branch curta, pair quando útil
+- Testes auto (unit/integr.), exploração e evidências
+- CI/CD, smoke pós-deploy, plano de rollback
+- Métricas: lead/cycle, throughput e CFD
+- Gestão de bloqueios e classes de serviço (Expedite, Padrão, Data fixa)
+
+## Estrutura do repositório
+
+- index.html — página única com todas as seções
+- styles.css — estilos do site
+- script.js — simulação do fluxo e impressão
+- processo-kanban.drawio.png — diagrama do processo
+- README.md — este arquivo
+
+Obs: os limites de WIP estão nos atributos data-wip das colunas (HTML).
+
+## Como rodar local
+
+1) Baixe/clonar o repositório  
+2) Abra o arquivo index.html no navegador
+
+Opcional: usar “Live Server” no VS Code para auto-reload.
 
 ## Equipe
 
-- Luiz Roberto da Silva Gonzaga ( 20232014040027 )
-- Luiz Fernando Gama Nery ( 20232014040019 )
+- Luiz Roberto da Silva Gonzaga (20232014040027)  
+- Luiz Fernando Gama Nery (20232014040019)
 
----
-
- **Nota:** Este processo é flexível e pode ser ajustado conforme a evolução do projeto e o feedback dos stakeholders.
+Professor(a): Marília Aranha
+Matéria: Processo de Software
