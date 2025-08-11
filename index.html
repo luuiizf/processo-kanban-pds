@@ -1,753 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Processo Ágil com Kanban – PDS Corporativo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-yellow: #FFD700;
-            --primary-orange: #FF8C00;
-            --light-yellow: #FFF8DC;
-            --off-white: #FAFAFA;
-            --white: #FFFFFF;
-            --text-dark: #2C3E50;
-            --text-medium: #34495E;
-            --text-light: #7F8C8D;
-            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
-            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--text-dark);
-            background: linear-gradient(135deg, var(--off-white) 0%, var(--light-yellow) 100%);
-            min-height: 100vh;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInFromTop {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInFromLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInFromRight {
-            from {
-                opacity: 0;
-                transform: translateX(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding: 2rem 0;
-            animation: slideInFromTop 1s ease-out 0.2s both;
-        }
-
-        .main-title {
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--primary-orange), var(--primary-yellow));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-            position: relative;
-            display: inline-block;
-        }
-
-        .main-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(135deg, var(--primary-orange), var(--primary-yellow));
-            border-radius: 2px;
-            animation: pulse 2s infinite;
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            color: var(--text-medium);
-            font-weight: 400;
-            max-width: 800px;
-            margin: 0 auto;
-            animation: slideInFromTop 1s ease-out 0.4s both;
-        }
-
-        section {
-            background: var(--white);
-            margin: 2rem 0;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow-medium);
-            border: 1px solid rgba(255, 215, 0, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
-            transition: left 0.5s ease;
-        }
-
-        section:hover::before {
-            left: 100%;
-        }
-
-        section:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-            border-color: var(--primary-orange);
-        }
-
-        section:nth-child(odd) {
-            animation: slideInFromLeft 0.8s ease-out;
-        }
-
-        section:nth-child(even) {
-            animation: slideInFromRight 0.8s ease-out;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 3px solid var(--primary-yellow);
-            display: inline-block;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -3px;
-            left: 0;
-            width: 0;
-            height: 3px;
-            background: var(--primary-orange);
-            transition: width 0.3s ease;
-        }
-
-        section:hover .section-title::after {
-            width: 100%;
-        }
-
-        .intro-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            color: var(--text-medium);
-            text-align: justify;
-            animation: fadeIn 1s ease-out 0.6s both;
-        }
-
-        .diagram-section {
-            text-align: center;
-        }
-
-        .diagram-instruction {
-            font-size: 1.1rem;
-            color: var(--text-medium);
-            margin-bottom: 2rem;
-            font-style: italic;
-            animation: fadeIn 1s ease-out 0.8s both;
-        }
-
-        .diagram-placeholder {
-            width: 100%;
-            max-width: 800px;
-            height: 400px;
-            background: linear-gradient(135deg, var(--light-yellow), var(--off-white));
-            border: 2px dashed var(--primary-orange);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            color: var(--text-light);
-            font-size: 1.2rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .diagram-placeholder:hover {
-            border-color: var(--primary-yellow);
-            background: linear-gradient(135deg, var(--primary-yellow), var(--light-yellow));
-            transform: scale(1.02);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1rem;
-            background: var(--white);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: var(--shadow-light);
-            animation: slideInFromLeft 0.8s ease-out 1s both;
-        }
-
-        th {
-            background: linear-gradient(135deg, var(--primary-orange), var(--primary-yellow));
-            color: var(--white);
-            padding: 1.2rem;
-            text-align: left;
-            font-weight: 600;
-            font-size: 1.1rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        th::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        th:hover::before {
-        }
-
-        td {
-            padding: 1.2rem;
-            border-bottom: 1px solid #E8E8E8;
-            vertical-align: top;
-            transition: all 0.3s ease;
-        }
-
-        tr:nth-child(even) {
-            background: var(--off-white);
-        }
-
-        tr:hover {
-            background: var(--light-yellow);
-            transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(255, 140, 0, 0.2);
-        }
-
-        .etapa-column {
-            font-weight: 600;
-            color: var(--primary-orange);
-            min-width: 150px;
-            position: relative;
-        }
-
-        .etapa-column::before {
-            content: '▶';
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-        }
-
-        tr:hover .etapa-column::before {
-            transform: scale(1.2);
-        }
-
-        .papel-column {
-            font-weight: 600;
-            color: var(--primary-orange);
-            min-width: 180px;
-            position: relative;
-        }
-
-        .papel-column::before {
-            content: '👤';
-            margin-right: 8px;
-            transition: transform 0.3s ease;
-        }
-
-        tr:hover .papel-column::before {
-            transform: scale(1.2);
-        }
-
-        .practices-list {
-            list-style: none;
-            padding: 0;
-            animation: slideInFromRight 1s ease-out 1.2s both;
-        }
-
-        .practices-list li {
-            background: var(--light-yellow);
-            margin: 0.8rem 0;
-            padding: 1.2rem;
-            border-radius: 10px;
-            border-left: 4px solid var(--primary-orange);
-            font-size: 1.1rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .practices-list li::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 140, 0, 0.1), transparent);
-            transition: right 0.5s ease;
-        }
-        }
-
-        .practices-list li:hover {
-            transform: translateX(10px) scale(1.02);
-            box-shadow: 0 5px 20px rgba(255, 140, 0, 0.3);
-            border-left-width: 6px;
-        }
-
-        .practices-list li:hover::after {
-            right: 100%;
-        }
-
-        .practices-list li::before {
-            content: "✓";
-            color: var(--primary-orange);
-            font-weight: bold;
-            margin-right: 0.8rem;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-
-        .practices-list li:hover::before {
-            transform: scale(1.3) rotate(360deg);
-            color: var(--primary-yellow);
-        }
-
-        footer {
-            background: linear-gradient(135deg, var(--text-dark), var(--text-medium));
-            color: var(--white);
-            text-align: center;
-            padding: 2.5rem;
-            margin-top: 3rem;
-            border-radius: 16px;
-            box-shadow: var(--shadow-medium);
-            animation: slideInFromTop 1s ease-out 1.4s both;
-            position: relative;
-            overflow: hidden;
-        }
-
-        footer::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .footer-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .team-names {
-            font-size: 1.1rem;
-            margin-bottom: 1.5rem;
-            color: var(--light-yellow);
-            position: relative;
-            z-index: 1;
-            animation: pulse 3s infinite;
-        }
-
-        .github-link {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary-orange), var(--primary-yellow));
-            color: var(--white);
-            text-decoration: none;
-            padding: 0.8rem 2rem;
-            border-radius: 25px;
-            font-weight: 500;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative;
-            z-index: 1;
-            overflow: hidden;
-        }
-
-        .github-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        }
-
-        .github-link:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 10px 25px rgba(255, 140, 0, 0.5);
-        }
-
-        .github-link:hover::before {
-            left: 100%;
-        }
-
-        /* Scroll animations */
-        @media (prefers-reduced-motion: no-preference) {
-            .animate-on-scroll {
-                opacity: 0;
-                transform: translateY(30px);
-                transition: all 0.6s ease;
-            }
-
-            .animate-on-scroll.visible {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Responsividade */
-        @media (max-width: 768px) {
-            .container {
-                padding: 1rem;
-            }
-
-            .main-title {
-                font-size: 2.2rem;
-            }
-
-            section {
-                padding: 1.5rem;
-                margin: 1.5rem 0;
-            }
-
-            .section-title {
-                font-size: 1.5rem;
-            }
-
-            table {
-                font-size: 0.9rem;
-            }
-
-            th, td {
-                padding: 0.8rem;
-            }
-
-            .diagram-placeholder {
-                height: 300px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-title {
-                font-size: 1.8rem;
-            }
-
-            .intro-text, .diagram-instruction {
-                font-size: 1rem;
-            }
-
-            .practices-list li {
-                font-size: 1rem;
-                padding: 1rem;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1 class="main-title">Processo Ágil com Kanban – PDS Corporativo</h1>
-            <p class="subtitle">Metodologia otimizada para entregas contínuas de software</p>
-        </header>
-
-        <section>
-            <h2 class="section-title">Introdução</h2>
-            <p class="intro-text">
-                Este processo ágil baseado no método Kanban foi desenvolvido para aplicação no PDS Corporativo, 
-                visando maior visibilidade, organização e qualidade nas entregas contínuas de software. 
-                A seguir, apresentamos o fluxo de atividades, papéis envolvidos e práticas ágeis utilizadas.
-            </p>
-        </section>
-
-        <section class="diagram-section">
-            <h2 class="section-title">Diagrama do Processo</h2>
-            <p class="diagram-instruction">
-                O diagrama abaixo representa o ciclo de vida de uma tarefa dentro do processo Kanban:
-            </p>
-            <div class="diagram-placeholder">
-                <img src="diagrama-kanban.png" alt="Diagrama do Processo Kanban" style="max-width: 100%; height: auto; display: block;" 
-                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; flex-direction: column;">
-                    <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
-                    <div>Diagrama Kanban</div>
-                    <div style="font-size: 0.9rem; margin-top: 0.5rem;">(diagrama-kanban.png)</div>
-                </div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kanban no PDS Corporativo</title>
+    <meta name="description" content="Processo ágil Kanban aplicado ao PDS Corporativo: diagrama, atividades, papéis, práticas e publicação." />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="script.js"></script>
+  </head>
+  <body>
+    <a class="skip-to-content" href="#conteudo">Pular para o conteúdo</a>
+
+    <header class="site-header" role="banner">
+      <div class="container header-inner">
+        <h1>Kanban no PDS Corporativo</h1>
+        <nav aria-label="Navegação principal">
+          <ul class="nav">
+            <li><a href="#introducao">Introdução</a></li>
+            <li><a href="#diagrama">Diagrama</a></li>
+            <li><a href="#quadro">Quadro Kanban</a></li>
+            <li><a href="#atividades">Atividades</a></li>
+            <li><a href="#papeis">Papéis</a></li>
+            <li><a href="#raci">RACI</a></li>
+            <li><a href="#praticas">Práticas</a></li>
+            <li><a href="#praticas-por-atividade">Práticas por Atividade</a></li>
+            <li><a href="#rodape">Rodapé</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main id="conteudo" class="container" role="main">
+      <section id="introducao" class="section">
+        <h2>Introdução</h2>
+        <p>
+          Kanban é um método ágil para visualizar o trabalho, limitar WIP e melhorar o fluxo. 
+          No PDS Corporativo buscamos previsibilidade, menor lead time, qualidade e transparência.
+        </p>
+        <p>
+          Aqui você encontra o diagrama do processo, as etapas, os papéis e as práticas usadas.
+        </p>
+        <div class="callout">
+          <strong>Fluxo definido:</strong> Backlog → A Fazer → Em Andamento → Em Teste → Concluído
+        </div>
+      </section>
+
+      <section id="diagrama" class="section">
+        <div class="section-header">
+          <h2>Diagrama de atividades</h2>
+          <div class="actions">
+            <button id="imprimir" class="btn btn-outline" type="button">Imprimir / Salvar PDF</button>
+          </div>
+        </div>
+        <img src="processo-kanban.drawio.png" alt="Diagrama de atividades do processo Kanban no PDS Corporativo" class="diagram" />
+        <details class="policy">
+          <summary>Políticas do fluxo (resumo)</summary>
+          <ul>
+            <li>Backlog: priorização por valor, critérios rascunhados.</li>
+            <li>A Fazer: DoR simples; puxar por capacidade.</li>
+            <li>Em Andamento: WIP 3; PRs pequenos; pairing quando útil.</li>
+            <li>Em Teste: WIP 2; testes auto e explorações.</li>
+            <li>Concluído: DoD claro; registros essenciais.</li>
+          </ul>
+        </details>
+      </section>
+
+      <section id="quadro" class="section">
+        <div class="section-header">
+          <h2>Quadro Kanban (simulação do fluxo)</h2>
+          <div class="actions">
+            <button id="simularFluxo" class="btn btn-primary" type="button" aria-describedby="simular-desc">Simular fluxo de uma tarefa</button>
+          </div>
+        </div>
+        <p id="simular-desc" class="muted">
+          Clique para ver um cartão passando pelas colunas. Se passar do WIP, aparece aviso.
+        </p>
+
+        <div class="kanban" role="region" aria-label="Quadro Kanban com 5 colunas">
+          <div class="kanban-column" data-col="backlog" aria-label="Backlog" aria-describedby="backlog-desc">
+            <div class="kanban-column-header">
+              <h3>Backlog</h3>
+              <span class="badge badge-neutral">Sem WIP</span>
             </div>
-        </section>
-
-        <section>
-            <h2 class="section-title">Atividades do Processo</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Etapa</th>
-                        <th>Descrição</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="etapa-column">Levantamento</td>
-                        <td>Identificação de novas demandas e entendimento das necessidades</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Priorização</td>
-                        <td>Avaliação de importância e urgência da demanda</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Planejamento</td>
-                        <td>Divisão em tarefas menores, estimativas e ordenação</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Execução</td>
-                        <td>Desenvolvimento da tarefa com boas práticas ágeis</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Validação</td>
-                        <td>Testes, revisão de código, homologação</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Implantação</td>
-                        <td>Deploy contínuo e liberação para uso</td>
-                    </tr>
-                    <tr>
-                        <td class="etapa-column">Feedback</td>
-                        <td>Avaliação do resultado e coleta de sugestões dos usuários</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <h2 class="section-title">Papéis e Responsabilidades</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Papel</th>
-                        <th>Responsabilidades</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="papel-column">Desenvolvedor</td>
-                        <td>Implementar funcionalidades e corrigir bugs</td>
-                    </tr>
-                    <tr>
-                        <td class="papel-column">Analista de QA</td>
-                        <td>Testar e validar o funcionamento das entregas</td>
-                    </tr>
-                    <tr>
-                        <td class="papel-column">Facilitador (Líder)</td>
-                        <td>Monitorar o fluxo, garantir ritmo e remover impedimentos</td>
-                    </tr>
-                    <tr>
-                        <td class="papel-column">Stakeholders</td>
-                        <td>Reportar necessidades e validar entregas</td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-
-        <section>
-            <h2 class="section-title">Práticas Ágeis Utilizadas</h2>
-            <ul class="practices-list">
-                <li>Visualização do fluxo de trabalho</li>
-                <li>Limitação de tarefas em andamento (WIP)</li>
-                <li>Integração contínua (CI)</li>
-                <li>Testes automatizados</li>
-                <li>Reuniões curtas para alinhamento</li>
-                <li>Feedback contínuo</li>
+            <p id="backlog-desc" class="sr-only">Itens de demanda, priorização por valor.</p>
+            <ul class="kanban-list" aria-label="Cartões em Backlog">
+              <li class="kanban-card" tabindex="0">
+                <strong>US-017</strong> — Cadastro de cliente
+                <small>Critérios rascunhados</small>
+              </li>
+              <li class="kanban-card" tabindex="0">
+                <strong>US-021</strong> — Exportar relatórios
+                <small>Pendente refinamento</small>
+              </li>
+              <li class="kanban-card card-simular" aria-live="polite" tabindex="0">
+                <strong>US-034</strong> — Pesquisa por nome
+                <small>Card de simulação</small>
+              </li>
             </ul>
-        </section>
+          </div>
 
-        <footer>
-            <h3 class="footer-title">Equipe de Desenvolvimento</h3>
-            <p class="team-names">
-                Luiz Fernando • Luiz Roberto
-            </p>
-            <a href="https://seu-usuario.github.io/processo-kanban-pds" class="github-link">
-                📚 Ver no GitHub Pages
-            </a>
-        </footer>
-    </div>
+          <div class="kanban-column" data-col="a-fazer" aria-label="A Fazer" aria-describedby="afazer-desc" data-wip="5">
+            <div class="kanban-column-header">
+              <h3>A Fazer</h3>
+              <span class="badge badge-wip">WIP 5</span>
+            </div>
+            <p id="afazer-desc" class="sr-only">Pronto para iniciar; critérios de aceite básicos.</p>
+            <ul class="kanban-list" aria-label="Cartões em A Fazer"></ul>
+          </div>
 
-    <script>
-        // Animações ao fazer scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
+          <div class="kanban-column" data-col="em-andamento" aria-label="Em Andamento" aria-describedby="emand-desc" data-wip="3">
+            <div class="kanban-column-header">
+              <h3>Em Andamento</h3>
+              <span class="badge badge-wip">WIP 3</span>
+            </div>
+            <p id="emand-desc" class="sr-only">Dev, pairing, PRs, testes unitários.</p>
+            <ul class="kanban-list" aria-label="Cartões em Em Andamento">
+              <li class="kanban-card" tabindex="0">
+                <strong>US-028</strong> — Login social
+                <small>Em implementação</small>
+              </li>
+            </ul>
+          </div>
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
+          <div class="kanban-column" data-col="em-teste" aria-label="Em Teste" aria-describedby="emteste-desc" data-wip="2">
+            <div class="kanban-column-header">
+              <h3>Em Teste</h3>
+              <span class="badge badge-wip">WIP 2</span>
+            </div>
+            <p id="emteste-desc" class="sr-only">QA, automação e exploração.</p>
+            <ul class="kanban-list" aria-label="Cartões em Em Teste">
+              <li class="kanban-card" tabindex="0">
+                <strong>BUG-112</strong> — Corrigir paginação
+                <small>Testes em execução</small>
+              </li>
+            </ul>
+          </div>
 
-        // Observar todas as seções
-        document.querySelectorAll('section').forEach(section => {
-            section.classList.add('animate-on-scroll');
-            observer.observe(section);
-        });
+          <div class="kanban-column" data-col="concluido" aria-label="Concluído" aria-describedby="concluido-desc">
+            <div class="kanban-column-header">
+              <h3>Concluído</h3>
+              <span class="badge badge-done">Done</span>
+            </div>
+            <p id="concluido-desc" class="sr-only">Atende DoD; pronto para entrega/homologação.</p>
+            <ul class="kanban-list" aria-label="Cartões Concluídos">
+              <li class="kanban-card" tabindex="0">
+                <strong>US-013</strong> — Recuperar senha
+                <small>Done</small>
+              </li>
+            </ul>
+          </div>
+        </div>
 
-        // Efeito de digitação no título
-        const title = document.querySelector('.main-title');
-        const titleText = title.textContent;
-        title.textContent = '';
-        
-        let i = 0;
-        const typeWriter = () => {
-            if (i < titleText.length) {
-                title.textContent += titleText.charAt(i);
-                i++;
-                setTimeout(typeWriter, 50);
-            }
-        };
-        
-        setTimeout(typeWriter, 1000);
+        <div class="legend">
+          <span class="dot dot-yellow"></span> Atividade
+          <span class="dot dot-orange"></span> Alerta/WIP
+          <span class="dot dot-neutral"></span> Sem limite
+        </div>
 
-        // Efeito parallax suave no background
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallax = document.body;
-            const speed = scrolled * 0.5;
-            parallax.style.backgroundPosition = `center ${speed}px`;
-        });
+        <div class="toast" role="status" aria-live="assertive" aria-atomic="true" hidden></div>
+      </section>
 
-        // Adicionar partículas flutuantes
-        function createParticle() {
-            const particle = document.createElement('div');
-            particle.style.cssText = `
-                position: fixed;
-                width: 4px;
-                height: 4px;
-                background: linear-gradient(45deg, #FFD700, #FF8C00);
-                border-radius: 50%;
-                pointer-events: none;
-                z-index: -1;
-                opacity: 0.6;
-                animation: floatUp 6s linear infinite;
-            `;
-            
-            particle.style.left = Math.random() * 100 + 'vw';
-            particle.style.animationDelay = Math.random() * 6 + 's';
-            
-            document.body.appendChild(particle);
-            
-            setTimeout(() => {
-                particle.remove();
-            }, 6000);
-        }
+      <section id="atividades" class="section">
+        <h2>Tabela de atividades</h2>
+        <div class="table-wrapper">
+          <table>
+            <caption>Etapas do processo e descrições</caption>
+            <thead>
+              <tr>
+                <th>Etapa</th>
+                <th>Objetivo</th>
+                <th>Entradas</th>
+                <th>Atividades</th>
+                <th>Saídas</th>
+                <th>Políticas / WIP</th>
+                <th>Métricas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Replenishment / Planejamento</td>
+                <td>Escolher o que entra no próximo ciclo.</td>
+                <td>Backlog bruto, capacidade, riscos.</td>
+                <td>Revisar, fatiar, priorizar, alinhar.</td>
+                <td>Itens claros para “A Fazer”.</td>
+                <td>Política de seleção visível.</td>
+                <td>Tempo de reunião, % itens prontos.</td>
+              </tr>
+              <tr>
+                <td>Backlog</td>
+                <td>Guardar e ordenar ideias por valor.</td>
+                <td>Ideias, feedbacks.</td>
+                <td>Refino leve, dividir épicos, crit. rascunhados.</td>
+                <td>Itens prontos para “A Fazer”.</td>
+                <td>Sem WIP. Revisão semanal.</td>
+                <td>Age do backlog, % com critérios.</td>
+              </tr>
+              <tr>
+                <td>A Fazer</td>
+                <td>Deixar pronto para começar.</td>
+                <td>Itens priorizados com DoR.</td>
+                <td>Tirar dúvidas, alinhar técnico, estimar leve.</td>
+                <td>Itens aptos ao dev.</td>
+                <td>WIP 5; puxar por capacidade.</td>
+                <td>Bloqueios na entrada.</td>
+              </tr>
+              <tr>
+                <td>Em Andamento</td>
+                <td>Construir com qualidade.</td>
+                <td>Item “A Fazer”.</td>
+                <td>Dev, testes unit., PR e revisão.</td>
+                <td>Pronto para teste.</td>
+                <td>WIP 3; PR pequeno.</td>
+                <td>Cycle (dev), retrabalho.</td>
+              </tr>
+              <tr>
+                <td>Em Teste</td>
+                <td>Validar critérios e regressão.</td>
+                <td>Build candidato.</td>
+                <td>Auto + exploração + evidências.</td>
+                <td>Apto para produção.</td>
+                <td>WIP 2; automação.</td>
+                <td>Defeitos, tempo de teste.</td>
+              </tr>
+              <tr>
+                <td>Implantar</td>
+                <td>Levar para prod com segurança.</td>
+                <td>Build aprovado.</td>
+                <td>Deploy, smoke test, plano de rollback.</td>
+                <td>Versão no ar.</td>
+                <td>Janela/rota de release.</td>
+                <td>Falhas de deploy, MTTR.</td>
+              </tr>
+              <tr>
+                <td>Feedback do Usuário</td>
+                <td>Ouvir e ajustar.</td>
+                <td>Uso real, comentários.</td>
+                <td>Coletar, taguear, decidir ação.</td>
+                <td>Entradas para backlog.</td>
+                <td>Classe de serviço p/ urgentes.</td>
+                <td>Tempo de resposta.</td>
+              </tr>
+              <tr>
+                <td>Gestão de Métricas / Fluxo</td>
+                <td>Controlar o sistema.</td>
+                <td>Dados do quadro/CI.</td>
+                <td>CFD, lead/cycle, throughput.</td>
+                <td>Insights e ações.</td>
+                <td>Revisão semanal.</td>
+                <td>Trend de lead time.</td>
+              </tr>
+              <tr>
+                <td>Review / Demo e Retro</td>
+                <td>Aprender e melhorar.</td>
+                <td>Entrega feita, métricas.</td>
+                <td>Mostrar, ouvir, decidir mudanças.</td>
+                <td>Plano de melhorias.</td>
+                <td>Foco em políticas do fluxo.</td>
+                <td>Ações concluídas.</td>
+              </tr>
+              <tr>
+                <td>Concluído</td>
+                <td>Registrar entrega.</td>
+                <td>Item validado.</td>
+                <td>Doc mínima, changelog, aviso.</td>
+                <td>Item entregue/homologado.</td>
+                <td>DoD: testes verdes, doc.</td>
+                <td>Lead time, throughput.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        // Criar partículas periodicamente
-        setInterval(createParticle, 300);
+      <section id="papeis" class="section">
+        <h2>Papéis e responsabilidades</h2>
+        <div class="table-wrapper">
+          <table>
+            <caption>Papéis no processo</caption>
+            <thead>
+              <tr>
+                <th>Papel</th>
+                <th>Responsabilidades principais</th>
+                <th>Decisões / Artefatos</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>PO</td>
+                <td>Valor e prioridade; critérios; aceitar.</td>
+                <td>Backlog priorizado; aceite.</td>
+              </tr>
+              <tr>
+                <td>SDM / Agile Coach</td>
+                <td>Fluxo; impedimentos; métricas; cadências.</td>
+                <td>Políticas; ações de melhoria.</td>
+              </tr>
+              <tr>
+                <td>Tech Lead</td>
+                <td>Direção técnica; padrões; revisar soluções.</td>
+                <td>Arquitetura; decisões técnicas.</td>
+              </tr>
+              <tr>
+                <td>Devs</td>
+                <td>Implementar; testes; PRs; manter quadro.</td>
+                <td>Commits/PRs; docs técnicas.</td>
+              </tr>
+              <tr>
+                <td>QA</td>
+                <td>Planejar/executar testes; automatizar.</td>
+                <td>Plano; suíte; evidências.</td>
+              </tr>
+              <tr>
+                <td>Stakeholders</td>
+                <td>Feedback; objetivos; validar valor.</td>
+                <td>Feedbacks; aprovações.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-        // Adicionar CSS para animação das partículas
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes floatUp {
-                from {
-                    transform: translateY(100vh) rotate(0deg);
-                    opacity: 0;
-                }
-                10% {
-                    opacity: 0.6;
-                }
-                90% {
-                    opacity: 0.6;
-                }
-                to {
-                    transform: translateY(-100px) rotate(360deg);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
-</body>
+      <section id="raci" class="section">
+        <h2>Papéis x Atividades (RACI simples)</h2>
+        <p class="muted">R = Responsável; A = Aprovador; C = Consultado; I = Informado.</p>
+        <div class="table-wrapper">
+          <table class="raci">
+            <thead>
+              <tr>
+                <th>Atividade</th>
+                <th>PO</th>
+                <th>SDM</th>
+                <th>Tech Lead</th>
+                <th>Devs</th>
+                <th>QA</th>
+                <th>Stake</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Replenishment / Planejamento</td>
+                <td>A</td><td>R</td><td>C</td><td>C</td><td>I</td><td>C</td>
+              </tr>
+              <tr>
+                <td>A Fazer (DoR)</td>
+                <td>A</td><td>I</td><td>C</td><td>R</td><td>C</td><td>I</td>
+              </tr>
+              <tr>
+                <td>Em Andamento (Dev)</td>
+                <td>I</td><td>I</td><td>C</td><td>R</td><td>C</td><td>I</td>
+              </tr>
+              <tr>
+                <td>Em Teste</td>
+                <td>I</td><td>I</td><td>I</td><td>C</td><td>R</td><td>I</td>
+              </tr>
+              <tr>
+                <td>Implantar</td>
+                <td>I</td><td>C</td><td>A</td><td>R</td><td>C</td><td>I</td>
+              </tr>
+              <tr>
+                <td>Feedback do Usuário</td>
+                <td>R</td><td>I</td><td>I</td><td>I</td><td>I</td><td>C</td>
+              </tr>
+              <tr>
+                <td>Métricas / Fluxo</td>
+                <td>I</td><td>R</td><td>C</td><td>C</td><td>C</td><td>I</td>
+              </tr>
+              <tr>
+                <td>Review/Demo e Retro</td>
+                <td>A</td><td>R</td><td>C</td><td>C</td><td>C</td><td>C</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="praticas" class="section">
+        <h2>Práticas ágeis (geral)</h2>
+        <ul class="practice-list">
+          <li><strong>Limites de WIP</strong></li>
+          <li><strong>Pull por capacidade</strong></li>
+          <li><strong>DoR e DoD</strong></li>
+          <li><strong>Testes auto</strong> (unit, integração, smoke)</li>
+          <li><strong>PR pequeno + review</strong></li>
+          <li><strong>Pair/Mob</strong> quando útil</li>
+          <li><strong>Métricas</strong>: lead/cycle, throughput, CFD</li>
+          <li><strong>Gestão de bloqueios</strong></li>
+          <li><strong>Classes de serviço</strong> (Expedite, Padrão, Data fixa)</li>
+          <li><strong>Retros</strong> com ações simples</li>
+        </ul>
+      </section>
+
+      <section id="praticas-por-atividade" class="section">
+        <h2>Práticas por atividade</h2>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Atividade</th>
+                <th>Práticas</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Replenishment</td>
+                <td>Priorizar por valor; fatiar; definir DoR; limite de itens selecionados</td>
+              </tr>
+              <tr>
+                <td>A Fazer</td>
+                <td>Checklist DoR; evitar dependências; estimativa leve; política de pull</td>
+              </tr>
+              <tr>
+                <td>Em Andamento</td>
+                <td>WIP 3; branch curta; testes unit.; PR pequeno; pair em tarefas críticas</td>
+              </tr>
+              <tr>
+                <td>Em Teste</td>
+                <td>Teste auto (unit/integr.); exploração; evidências; corrigir rápido</td>
+              </tr>
+              <tr>
+                <td>Implantar</td>
+                <td>CI/CD; smoke pós-deploy; feature toggle; plano de rollback</td>
+              </tr>
+              <tr>
+                <td>Feedback</td>
+                <td>Coleta simples; tag por tema; decisões rápidas (volta ao backlog)</td>
+              </tr>
+              <tr>
+                <td>Métricas</td>
+                <td>CFD semanal; lead/cycle; throughput; olhar gargalos</td>
+              </tr>
+              <tr>
+                <td>Review/Retro</td>
+                <td>Demo curta; 2-3 ações de melhoria; revisar políticas do quadro</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <footer id="rodape" class="site-footer" role="contentinfo">
+      <div class="container">
+        <p><strong>Equipe:</strong> Luiz Fernando Gama Nery e Luiz Roberto da Silva Gonzaga</p>
+        <p>
+          Repositório: <a id="repo-link" href="https://github.com/luuiizf/processo-kanban-pds" target="_blank" rel="noopener">https://github.com/luuiizf/processo-kanban-pds</a>
+        </p>
+        <p class="muted">© 2025 PDS Corporativo — Kanban</p>
+      </div>
+    </footer>
+  </body>
 </html>
